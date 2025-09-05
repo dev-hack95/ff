@@ -21,7 +21,7 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
                 char fullpath[MAX_BUFFER];
                 // TODO: Insted of realpath use stat
                 realpath(dir->d_name, fullpath);
-                int written = snprintf(str, sizeof(str), "{\n file: %.4000s\n},\n", fullpath);
+                long unsigned int written = snprintf(str, sizeof(str), "{\n file: %.4000s\n},\n", fullpath);
                 if (written >= sizeof(str)) {
                     fprintf(stderr, "Output truncated");
                     fflush(stderr);
@@ -32,7 +32,7 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
 
             if (!found) {
                 char str[MAX_BUFFER];
-                int written = snprintf(str, sizeof(str), "{\n msg: no file found \n}");
+                long unsigned int written = snprintf(str, sizeof(str), "{\n msg: no file found \n}");
                 if (written >= sizeof(str)) {
                     fprintf(stderr, "Output truncated");
                     fflush(stderr);
@@ -46,6 +46,11 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
 }
 
 void search_in_file_for_text(Buffer *buff, const char* filename, const char* searchTerm, int JSON) {
+
+    // Error Type : Bug; Priority: High;
+    // TODO: Check first input file path is present of not
+
+    
     FILE* file = fopen(filename, "r+");
     CHECK_ALLOC(file);
     
@@ -63,7 +68,7 @@ void search_in_file_for_text(Buffer *buff, const char* filename, const char* sea
             line_number++;  
             if(strstr(buffer, searchTerm)) {
                 char str[MAX_BUFFER];
-                int written = snprintf(str, sizeof(str),"{\n  linenumber: %d,\n  line: %.4000s},\n", line_number, buffer);
+                long unsigned int written = snprintf(str, sizeof(str),"{\n  linenumber: %d,\n  line: %.4000s},\n", line_number, buffer);
                 if (written >= sizeof(str)) {
                     fprintf(stderr, "Warning: Output truncated at line %d\n", line_number);
                     fflush(stderr);
@@ -76,7 +81,7 @@ void search_in_file_for_text(Buffer *buff, const char* filename, const char* sea
         
         if (!found) {
             char str[MAX_BUFFER];
-            int written = snprintf(str, sizeof(str), "{\n msg: match not found \n}");
+            long unsigned int written = snprintf(str, sizeof(str), "{\n msg: match not found \n}");
             if (written >= sizeof(str)) {
                 fprintf(stderr, "Warning: Output truncated \n");
                 fflush(stderr);

@@ -1,6 +1,6 @@
 CFLAGS=-Wall -Wextra -pedantic
 
-all: ff.c.o ff.cxx.o
+all: ff.c.o ff.cxx.o ff
 
 ff.cxx.o: src/include/ff.h
 	$(CC) $(CFLAGS) -DLA_IMPLEMENTATION -x c++ -o ff.cxx.o -c src/include/ff.h
