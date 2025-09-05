@@ -12,6 +12,6 @@ ff: src/main.c
 	$(CC) $(CFLAGS) -std=c17 -ggdb -o ff src/main.c
 
 clean:
-	rm -f ff ff.c.o ff.cxx.o src/include/ff.h
+	rm -f ff ff.c.o ff.cxx.o
 
 .PHONY: all clean
