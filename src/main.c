@@ -37,6 +37,7 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
                     fprintf(stderr, "Output truncated");
                     fflush(stderr);
                 }
+                CHECK_BUFF(add_buffer(buff, str));
             }
     }
 
