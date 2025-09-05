@@ -116,7 +116,6 @@ static inline buffError_t add_buffer(Buffer* buff, const char* str) {
       new_capacity *= 2;
     }
 
-    char* old_data = buff->data;
     char* new_data = (char*)realloc(buff->data, new_capacity);
 
     if (new_data == NULL) {
