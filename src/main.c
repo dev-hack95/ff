@@ -8,7 +8,6 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
     struct dirent *dir;
     DIR* dp = opendir(currentWorkingDir);
     CHECK_ALLOC(dp);
-    int found = 0;
     switch (JSON) {
         case 1:
             printf("Demo JSON");
@@ -42,7 +41,6 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
                                 fflush(stderr);
                             }
                             CHECK_BUFF(add_buffer(buff, str));
-                            found = 1;
                         }
                     }
                 }
