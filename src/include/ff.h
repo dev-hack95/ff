@@ -6,6 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <io.h>
+#define F_OK 0
+#else
+#include <unistd.h>
+#endif
+
+
 #define MAX_BUFFER 4096 
 #define INITIAL_CAPACITY 64
 
@@ -154,8 +162,47 @@ void search_in_file_for_text(Buffer* buff, const char* filename, const char* sea
 /*
 * Function - search for fileneame
 * @info - Search for filename in current working direcitory
-* 
+* @param - Current working directory
+* @param - "search fiel name"
 */
 void search_for_filename(Buffer* buff, const char* currentWorkingDir, const char* fileSearchTerm, int JSON);
+
+
+/*
+* Function - help
+* @info - The function is used to show all command line --help properties
+*/
+void help();
+
+/*
+* Function - ff
+* @info - A ff runner with logic flow control of cli
+* @param - argc is number of input counts
+* @param - argv[] strores inputs of cli
+*/
+void ff(int argc, char* argv[]);
+
+/*
+* Function - file_exists
+* @info - Check file exist on path or not
+* @param - filename 
+*/
+static inline int file_exists(const char* filename) {
+
+#ifdef _WI32
+  if (_access(filename, F_OK) == 0) {
+    return 1;
+  } else {
+    return 0;
+  }
+#else
+  if (access(filename, F_OK) == 0) {
+    return 1; // File exist
+  } else {
+    return 0; // File doesnot exists
+  }
+#endif
+
+}
 
 #endif //__FF_H__

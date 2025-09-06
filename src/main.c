@@ -95,23 +95,24 @@ void search_in_file_for_text(Buffer *buff, const char* filename, const char* sea
     return;
 }
 
-int main(int argc, char *argv[]) {
-    Buffer* buff = new_buffer();
-    if (argc < 3) {
-        printf("not enough inputs");
-        exit(EXIT_FAILURE);
-    }
-
-    if (!strcmp(argv[3], "--json") && !strcmp(argv[4], "true")) {
-        search_in_file_for_text(buff, argv[2], argv[1], 1);
-    }else {
-        search_in_file_for_text(buff, argv[2], argv[1], 0);
-    }
-
-    //search_for_filename(buff, argv[2], "", 0);
+void ff(int argc, char *argv[]) {
     
-    printf("%s", buff->data);
+    Buffer* buff =  new_buffer();
+
+    if (!strcmp(argv[1], "-f")) {
+        
+    } else if (!(strcmp(argv[1], "-d"))) {
+        
+    } else {
+        
+    }
+    
     free_buffer(buff);
+}
+
+int main(int argc, char *argv[]) {
+
+    ff(argc, argv);
     
     return 0;
 }
