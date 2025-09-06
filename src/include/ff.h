@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -203,6 +204,15 @@ static inline int file_exists(const char* filename) {
   }
 #endif
 
+}
+
+static inline int CHECK_IS_DIR(const char* filepath) {
+  struct stat filestats;
+  if (stat(filepath, &filestats) != 0) {
+    return 0;
+  }
+
+  return S_ISDIR(filestats.st_mode);
 }
 
 #endif //__FF_H__

@@ -1,7 +1,6 @@
 #include "include/ff.h"
 #include <dirent.h>
-#include <string.h>
-#include <sys/stat.h>
+#include <stdio.h>
 
 void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;
@@ -21,24 +20,26 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
                 char str[MAX_BUFFER];
                 char fullpath[MAX_BUFFER];
                 // TODO: Insted of realpath use stat
-                realpath(dir->d_name, fullpath);
-                long unsigned int written = snprintf(str, sizeof(str), "{\n file: %.4000s\n},\n", fullpath);
-                if (written >= sizeof(str)) {
-                    fprintf(stderr, "Output truncated");
-                    fflush(stderr);
-                }
-                CHECK_BUFF(add_buffer(buff, str));
-                found = 1;
-            }
 
-            if (!found) {
-                char str[MAX_BUFFER];
-                long unsigned int written = snprintf(str, sizeof(str), "{\n msg: no file found \n}");
-                if (written >= sizeof(str)) {
-                    fprintf(stderr, "Output truncated");
-                    fflush(stderr);
+                if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
+                    continue;
                 }
-                CHECK_BUFF(add_buffer(buff, str));
+
+                if (CHECK_IS_DIR((const char*)dir->d_name)) {
+                    realpath(dir->d_name, fullpath);
+                    search_for_filename(buff, (const char*)fullpath, searchTerm, 0);
+                } else {
+                    realpath(dir->d_name, fullpath);
+                    if (strlen(searchTerm) == 0 || strstr(fullpath, searchTerm) != NULL) {
+                        long unsigned int written = snprintf(str, sizeof(str), "{\n file_path: %.4000s\n},\n", fullpath);
+                        if (written >= sizeof(str)) {
+                            fprintf(stderr, "Output truncated");
+                            fflush(stderr);
+                        }
+                        CHECK_BUFF(add_buffer(buff, str));
+                        found = 1;
+                    }
+                }
             }
     }
 
@@ -47,10 +48,6 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
 }
 
 void search_in_file_for_text(Buffer *buff, const char* filename, const char* searchTerm, int JSON) {
-
-    // Error Type : Bug; Priority: High;
-    // TODO: Check first input file path is present of not
-
     
     FILE* file = fopen(filename, "r+");
     CHECK_ALLOC(file);
@@ -119,6 +116,11 @@ void ff(int argc, char *argv[]) {
         } else {
             printf("Invalid number of arguments\n");
         }
+    }
+
+    if (!strcmp(argv[1], "-d")) {
+        //printf("%s", argv[3]);
+        search_for_filename(buff, argv[3], argv[2], 0);
     }
 
     printf("%s", buff->data);
