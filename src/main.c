@@ -3,49 +3,54 @@
 #include <stdio.h>
 #include <string.h>
 
+
 void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;
     DIR* dp = opendir(currentWorkingDir);
     CHECK_ALLOC(dp);
-
     int found = 0;
-
     switch (JSON) {
-        case  1:
-            // TODO: Write code for json format
+        case 1:
             printf("Demo JSON");
             break;
-
         default:
             while ((dir = readdir(dp)) != NULL) {
                 char str[MAX_BUFFER];
                 char fullpath[MAX_BUFFER];
-                // TODO: Insted of realpath use stat
-
+                char temp_path[MAX_BUFFER];
+                
                 if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
                     continue;
                 }
-
-                if (CHECK_IS_DIR((const char*)dir->d_name)) {
-                    realpath(dir->d_name, fullpath);
-                    search_for_filename(buff, (const char*)fullpath, searchTerm, 0);
+                
+                int path_len = snprintf(temp_path, sizeof(temp_path), "%s/%s", 
+                                       currentWorkingDir, dir->d_name);
+                if (path_len >= sizeof(temp_path)) {
+                    continue;
+                }
+                
+                if (CHECK_IS_DIR((const char*)temp_path)) {
+                    if (realpath(temp_path, fullpath)) {
+                        search_for_filename(buff, fullpath, searchTerm, 0);
+                    }
                 } else {
-                    realpath(dir->d_name, fullpath);
-                    if (strlen(searchTerm) == 0 || strstr(fullpath, searchTerm) != NULL) {
-                        long unsigned int written = snprintf(str, sizeof(str), "{\n file_path: %.4000s\n},\n", fullpath);
-                        if (written >= sizeof(str)) {
-                            fprintf(stderr, "Output truncated");
-                            fflush(stderr);
+                    if (realpath(temp_path, fullpath)) {
+                        if (strlen(searchTerm) == 0 || strstr(fullpath, searchTerm) != NULL) {
+                            long unsigned int written = snprintf(str, sizeof(str), 
+                                "{\n file_path: %.4000s\n},\n", fullpath);
+                            if (written >= sizeof(str)) {
+                                fprintf(stderr, "Output truncated");
+                                fflush(stderr);
+                            }
+                            CHECK_BUFF(add_buffer(buff, str));
+                            found = 1;
                         }
-                        CHECK_BUFF(add_buffer(buff, str));
-                        found = 1;
                     }
                 }
             }
     }
-
     closedir(dp);
-    return;    
+    return;
 }
 
 void search_in_file_for_text(Buffer *buff, const char* filename, const char* searchTerm, int JSON) {
