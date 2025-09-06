@@ -23,8 +23,7 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
                     continue;
                 }
                 
-                int path_len = snprintf(temp_path, sizeof(temp_path), "%s/%s", 
-                                       currentWorkingDir, dir->d_name);
+                long unsigned int path_len = snprintf(temp_path, sizeof(temp_path), "%s/%s", currentWorkingDir, dir->d_name);
                 if (path_len >= sizeof(temp_path)) {
                     continue;
                 }
