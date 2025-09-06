@@ -112,8 +112,6 @@ void ff(int argc, char *argv[]) {
             return;
         }
         
-        printf("Searching for '%s' in file '%s'\n", argv[2], argv[3]);
-        
         if (argc == 5 && !strcmp(argv[4], "--json")) {
             search_in_file_for_text(buff, argv[3], argv[2], 1);
         } else if (argc == 4) {
