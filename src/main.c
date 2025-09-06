@@ -1,5 +1,6 @@
 #include "include/ff.h"
 #include <dirent.h>
+#include <string.h>
 #include <sys/stat.h>
 
 void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char* searchTerm, int JSON) {
@@ -96,16 +97,33 @@ void search_in_file_for_text(Buffer *buff, const char* filename, const char* sea
 }
 
 void ff(int argc, char *argv[]) {
+    Buffer* buff = new_buffer();
     
-    Buffer* buff =  new_buffer();
-
     if (!strcmp(argv[1], "-f")) {
+        if (argc < 4) {
+            printf("Usage: %s -f <search_term> <filename> [--json]\n", argv[0]);
+            free_buffer(buff);
+            return;
+        }
         
-    } else if (!(strcmp(argv[1], "-d"))) {
+        if (!file_exists(argv[3])) { 
+            printf("File not found: %s\n", argv[2]);
+            free_buffer(buff);
+            return;
+        }
         
-    } else {
+        printf("Searching for '%s' in file '%s'\n", argv[2], argv[3]);
         
+        if (argc == 5 && !strcmp(argv[4], "--json")) {
+            search_in_file_for_text(buff, argv[3], argv[2], 1);
+        } else if (argc == 4) {
+            search_in_file_for_text(buff, argv[3], argv[2], 0);
+        } else {
+            printf("Invalid number of arguments\n");
+        }
     }
+
+    printf("%s", buff->data);
     
     free_buffer(buff);
 }
