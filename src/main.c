@@ -1,6 +1,7 @@
 #include "include/ff.h"
 #include <dirent.h>
 #include <stdio.h>
+#include <string.h>
 
 void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;
@@ -93,6 +94,23 @@ void search_in_file_for_text(Buffer *buff, const char* filename, const char* sea
     return;
 }
 
+void help(const char *program_name) {
+    printf("Usage:\n");
+    printf("  %s -f <search_term> <filename> [--json]  Search for text in a file\n", program_name);
+    printf("  %s -d <search_term> <directory>          Search for filenames in a directory\n", program_name);
+    printf("\nParameters:\n");
+    printf("  -f           Search inside a file\n");
+    printf("  -d           Search for files in a directory\n");
+    printf("  <search_term> Text string to search for\n");
+    printf("  <filename>   File to search within\n");
+    printf("  <directory>  Directory to search files in\n");
+    printf("  --json       Optional output format (JSON) when searching in a file\n");
+    printf("\nExamples:\n");
+    printf("  %s -f hello file.txt\n", program_name);
+    printf("  %s -d report ./Documents\n", program_name);
+}
+ 
+
 void ff(int argc, char *argv[]) {
     Buffer* buff = new_buffer();
     
@@ -129,6 +147,11 @@ void ff(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+
+    if (!strcmp(argv[1], "--help")) {
+        help(argv[0]);
+        return 0;
+    }
 
     ff(argc, argv);
     
