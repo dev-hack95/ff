@@ -107,7 +107,7 @@ void ff(int argc, char *argv[]) {
         }
         
         if (!file_exists(argv[3])) { 
-            printf("File not found: %s\n", argv[2]);
+            printf("File not found: %s\n", argv[3]);
             free_buffer(buff);
             return;
         }
