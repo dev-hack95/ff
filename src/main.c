@@ -1,8 +1,9 @@
 #include "include/ff.h"
 #include <dirent.h>
-#include <stdio.h>
-#include <string.h>
 
+#ifdef _WIN32
+#define realpath(temp, full) _fullpath((temp), (full), _MAX_PATH)
+#endif
 
 void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;

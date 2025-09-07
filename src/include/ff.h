@@ -15,7 +15,7 @@
 #endif
 
 
-#define MAX_BUFFER 4096 
+#define MAX_BUFFER 1024 
 #define INITIAL_CAPACITY 64
 
 typedef struct {
