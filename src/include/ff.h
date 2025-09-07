@@ -220,7 +220,7 @@ static inline void append_to_buffer(Buffer *buff, const char *fmt, ...) {
     char str[MAX_BUFFER];
     va_list args;
     va_start(args, fmt);
-    int written = vsnprintf(str, sizeof(str), fmt, args);
+    long unsigned int written = vsnprintf(str, sizeof(str), fmt, args);
     va_end(args);
 
     if (written < 0) {

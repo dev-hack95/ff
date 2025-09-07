@@ -128,14 +128,12 @@ void ff(int argc, char *argv[]) {
             printf("Invalid number of arguments\n");
         }
     } else if (!strcmp(argv[1], "-d")) {
-        //printf("%s", argv[3]);
         search_for_filename(buff, argv[3], argv[2], 0);
     } else {
         help(argv[0]);
     }
-
-    printf("%s", buff->data);
     
+    printf("%s", buff->data);
     free_buffer(buff);
 }
 
