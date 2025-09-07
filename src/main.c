@@ -2,7 +2,7 @@
 #include <dirent.h>
 
 #ifdef _WIN32
-#define realpath(temp, full) _fullpath((temp), (full), _MAX_PATH)
+#define realpath(src, dst) _fullpath((dst), (src), _MAX_PATH)
 #endif
 
 void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char* searchTerm, int JSON) {
@@ -15,7 +15,6 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
             break;
         default:
             while ((dir = readdir(dp)) != NULL) {
-                char str[MAX_BUFFER];
                 char fullpath[MAX_BUFFER];
                 char temp_path[MAX_BUFFER];
                 
@@ -28,24 +27,15 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
                     continue;
                 }
                 
-                if (CHECK_IS_DIR((const char*)temp_path)) {
-                    if (realpath(temp_path, fullpath)) {
-                        search_for_filename(buff, fullpath, searchTerm, 0);
-                    }
-                } else {
-                    if (realpath(temp_path, fullpath)) {
-                        if (strlen(searchTerm) == 0 || strstr(fullpath, searchTerm) != NULL) {
-                            long unsigned int written = snprintf(str, sizeof(str), 
-                                "{\n file_path: %.4000s\n},\n", fullpath);
-                            if (written >= sizeof(str)) {
-                                fprintf(stderr, "Output truncated");
-                                fflush(stderr);
-                            }
-                            CHECK_BUFF(add_buffer(buff, str));
-                        }
+                if (realpath(temp_path, fullpath)) {
+                    if (CHECK_IS_DIR(temp_path)) {
+                        search_for_filename(buff, fullpath, searchTerm, JSON);
+                    } else if (strlen(searchTerm) == 0 || strstr(fullpath, searchTerm)) {
+                        append_to_buffer(buff, "{\n  file_path: %s\n},\n", fullpath);
                     }
                 }
             }
+            break;
     }
     closedir(dp);
     return;
@@ -137,11 +127,11 @@ void ff(int argc, char *argv[]) {
         } else {
             printf("Invalid number of arguments\n");
         }
-    }
-
-    if (!strcmp(argv[1], "-d")) {
+    } else if (!strcmp(argv[1], "-d")) {
         //printf("%s", argv[3]);
         search_for_filename(buff, argv[3], argv[2], 0);
+    } else {
+        help(argv[0]);
     }
 
     printf("%s", buff->data);

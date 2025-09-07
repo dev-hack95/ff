@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <stdarg.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -173,7 +174,7 @@ void search_for_filename(Buffer* buff, const char* currentWorkingDir, const char
 * Function - help
 * @info - The function is used to show all command line --help properties
 */
-void help();
+void help(const char* exec_name);
 
 /*
 * Function - ff
@@ -213,6 +214,24 @@ static inline int CHECK_IS_DIR(const char* filepath) {
   }
 
   return S_ISDIR(filestats.st_mode);
+}
+
+static inline void append_to_buffer(Buffer *buff, const char *fmt, ...) {
+    char str[MAX_BUFFER];
+    va_list args;
+    va_start(args, fmt);
+    int written = vsnprintf(str, sizeof(str), fmt, args);
+    va_end(args);
+
+    if (written < 0) {
+        fprintf(stderr, "Error formatting output\n");
+        return;
+    }
+    if ((size_t)written >= sizeof(str)) {
+        fprintf(stderr, "Warning: output truncated\n");
+        fflush(stderr);
+    }
+    CHECK_BUFF(add_buffer(buff, str));
 }
 
 #endif //__FF_H__
