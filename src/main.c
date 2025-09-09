@@ -31,7 +31,7 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
                     if (CHECK_IS_DIR(temp_path)) {
                         search_for_filename(buff, fullpath, searchTerm, JSON);
                     } else if (strlen(searchTerm) == 0 || strstr(fullpath, searchTerm)) {
-                        append_to_buffer(buff, "{\n  file_path: %s\n},\n", fullpath);
+                        append_buffer(buff, "{\n  file_path: %s\n},\n", fullpath);
                     }
                 }
             }
@@ -59,26 +59,13 @@ void search_in_file_for_text(Buffer *buff, const char* filename, const char* sea
         while(fgets(buffer, sizeof(buffer), file)) {
             line_number++;  
             if(strstr(buffer, searchTerm)) {
-                char str[MAX_BUFFER];
-                long unsigned int written = snprintf(str, sizeof(str),"{\n  linenumber: %d,\n  line: %.4000s},\n", line_number, buffer);
-                if (written >= sizeof(str)) {
-                    fprintf(stderr, "Warning: Output truncated at line %d\n", line_number);
-                    fflush(stderr);
-                }
-                CHECK_BUFF(add_buffer(buff, str));
+                append_buffer(buff, "{\n linenumber: %d,\n line: %s},\n", line_number, buffer);
                 found = 1;
             }
         }
         
-        
         if (!found) {
-            char str[MAX_BUFFER];
-            long unsigned int written = snprintf(str, sizeof(str), "{\n msg: match not found \n}");
-            if (written >= sizeof(str)) {
-                fprintf(stderr, "Warning: Output truncated \n");
-                fflush(stderr);
-            }
-            CHECK_BUFF(add_buffer(buff, str));
+            append_buffer(buff, "{\n msg: match not found \n}");
         }
         break;
     }
@@ -128,6 +115,13 @@ void ff(int argc, char *argv[]) {
             printf("Invalid number of arguments\n");
         }
     } else if (!strcmp(argv[1], "-d")) {
+        
+        if (!file_exists(argv[3])) { 
+            printf("Dir not found: %s\n", argv[3]);
+            free_buffer(buff);
+            return;
+        }
+        
         search_for_filename(buff, argv[3], argv[2], 0);
     } else {
         help(argv[0]);

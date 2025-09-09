@@ -216,22 +216,25 @@ static inline int CHECK_IS_DIR(const char* filepath) {
   return S_ISDIR(filestats.st_mode);
 }
 
-static inline void append_to_buffer(Buffer *buff, const char *fmt, ...) {
+static inline void append_buffer(Buffer *buff, const char *fmt, ...) {
     char str[MAX_BUFFER];
     va_list args;
     va_start(args, fmt);
     long unsigned int written = vsnprintf(str, sizeof(str), fmt, args);
     va_end(args);
 
-    if (written < 0) {
-        fprintf(stderr, "Error formatting output\n");
-        return;
+    if (written <= 0) {
+      fprintf(stderr, "Error formatting output\n");
+      fflush(stderr);
+      return;
     }
     if ((size_t)written >= sizeof(str)) {
-        fprintf(stderr, "Warning: output truncated\n");
-        fflush(stderr);
+      fprintf(stderr, "Warning: output truncated\n");
+      fflush(stderr);
+      return;    
     }
     CHECK_BUFF(add_buffer(buff, str));
 }
+
 
 #endif //__FF_H__
