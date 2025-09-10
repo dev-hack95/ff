@@ -215,15 +215,25 @@ static inline int file_exists(const char* filename) {
 
 }
 
-static inline char* get_last(const char* word) {
-  const char *last_char = strrchr(word, '/');
+/*
+* Function(inline function): get_last
+* @info - A function is used to get last element after spliting the path
+* @param - const char* path is a file path input
+*/
+static inline char* get_last(const char* path) {
+  const char *last_char = strrchr(path, '/');
   if (last_char != NULL ) {
     return (char*)last_char + 1;
   }
 
-  return (char*)word;  
+  return (char*)path;  
 }
 
+/*
+* Function(inline function): CHECK_IS_DIR
+* @info - The function is used to check the given path is dir or not
+* @param - const char* filepath is a path of dir or a file
+*/
 static inline int CHECK_IS_DIR(const char* filepath) {
   struct stat filestats;
   if (stat(filepath, &filestats) != 0) {
@@ -233,6 +243,11 @@ static inline int CHECK_IS_DIR(const char* filepath) {
   return S_ISDIR(filestats.st_mode);
 }
 
+/*
+* Function(inline function) : CHECK_IS_SYMLINK
+* @info - Check the path is symlink or not
+* @param - const char* filepath is a path of dir 
+*/ 
 static inline int CHECK_IS_SYMLINK(const char* filepath) {
   struct stat filestats;
   

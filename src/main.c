@@ -1,13 +1,9 @@
 #include "include/ff.h"
 #include <dirent.h>
-#include <stdio.h>
-#include <string.h>
-
 
 /*
 * TODO: 1) Json implmentation 
 */
-
 void search_for_filename(const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;
     
@@ -33,7 +29,7 @@ void search_for_filename(const char* currentWorkingDir, const char* searchTerm, 
                     continue;
                 }
 
-                if (strstr(temp_path, "venv") || strstr(temp_path, ".git")) {
+                if (strstr(temp_path, "venv") || strstr(temp_path, ".git") || strstr(temp_path, ".venv") || strstr(temp_path, "node_modules")) {
                     continue;
                 }
                                 
@@ -56,7 +52,6 @@ void search_for_filename(const char* currentWorkingDir, const char* searchTerm, 
 /*
 * TODO: Json implmentation
 */
-
 void search_in_file_for_text(Buffer *buff, const char* filename, const char* searchTerm, int JSON) {
     
     FILE* file = fopen(filename, "r+");
