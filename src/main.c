@@ -1,5 +1,6 @@
 #include "include/ff.h"
 #include <dirent.h>
+#include <stdio.h>
 #include <string.h>
 
 /*
@@ -125,6 +126,9 @@ void ff(int argc, char *argv[]) {
         } else {
             printf("Invalid number of arguments\n");
         }
+
+        printf("%s", buff->data);
+        free_buffer(buff);
     } else if (!strcmp(argv[1], "-d")) {
         
         if (!file_exists(argv[3])) { 
@@ -137,9 +141,6 @@ void ff(int argc, char *argv[]) {
     } else {
         help(argv[0]);
     }
-    
-    printf("%s", buff->data);
-    free_buffer(buff);
 }
 
 int main(int argc, char *argv[]) {
