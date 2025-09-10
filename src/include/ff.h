@@ -9,10 +9,17 @@
 #include <stdarg.h>
 
 #ifdef _WIN32
+
 #include <io.h>
 #define F_OK 0
+
+// Realpath for windows
+#define realpath(src, dst) _fullpath((dst), (src), _MAX_PATH)
+
 #else
+
 #include <unistd.h>
+
 #endif
 
 
@@ -24,6 +31,7 @@ typedef struct {
   size_t length;
   size_t capacity;
 } Buffer;
+
 
 /*
 * Enum - buffError_t
@@ -167,7 +175,7 @@ void search_in_file_for_text(Buffer* buff, const char* filename, const char* sea
 * @param - Current working directory
 * @param - "search fiel name"
 */
-void search_for_filename(Buffer* buff, const char* currentWorkingDir, const char* fileSearchTerm, int JSON);
+void search_for_filename(const char* currentWorkingDir, const char* fileSearchTerm, int JSON);
 
 
 /*
@@ -214,6 +222,16 @@ static inline int CHECK_IS_DIR(const char* filepath) {
   }
 
   return S_ISDIR(filestats.st_mode);
+}
+
+static inline int CHECK_IS_SYMLINK(const char* filepath) {
+  struct stat filestats;
+  
+  if (stat(filepath, &filestats) != 0) {
+    return 0;
+  }
+
+  return S_ISLNK(filestats.st_mode);
 }
 
 static inline void append_buffer(Buffer *buff, const char *fmt, ...) {

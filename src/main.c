@@ -1,22 +1,26 @@
 #include "include/ff.h"
 #include <dirent.h>
+#include <string.h>
 
-#ifdef _WIN32
-#define realpath(src, dst) _fullpath((dst), (src), _MAX_PATH)
-#endif
-
-void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char* searchTerm, int JSON) {
+/*
+* TODO: 1) Multi thread implementation with queue, try this with single core (i.e 2 threads)
+* TODO: 2) Json implmentation 
+*/
+void search_for_filename(const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;
+    
+    char fullpath[MAX_BUFFER];
+    char temp_path[MAX_BUFFER];
+    
     DIR* dp = opendir(currentWorkingDir);
     CHECK_ALLOC(dp);
+    
     switch (JSON) {
         case 1:
             printf("Demo JSON");
             break;
         default:
             while ((dir = readdir(dp)) != NULL) {
-                char fullpath[MAX_BUFFER];
-                char temp_path[MAX_BUFFER];
                 
                 if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
                     continue;
@@ -28,10 +32,13 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
                 }
                 
                 if (realpath(temp_path, fullpath)) {
-                    if (CHECK_IS_DIR(temp_path)) {
-                        search_for_filename(buff, fullpath, searchTerm, JSON);
-                    } else if (strlen(searchTerm) == 0 || strstr(fullpath, searchTerm)) {
-                        append_buffer(buff, "{\n  file_path: %s\n},\n", fullpath);
+                    if (!CHECK_IS_SYMLINK(fullpath)) {
+                        if (CHECK_IS_DIR(fullpath)) {
+                            search_for_filename(fullpath, searchTerm, JSON);
+                        } else if (strlen(searchTerm) == 0 || strstr(temp_path, searchTerm)) {
+                            // append_buffer(buff, "{\n  file_path: %s\n},\n", fullpath);
+                            printf("{\n file_path: %s \n},\n", fullpath);
+                        }
                     }
                 }
             }
@@ -41,6 +48,10 @@ void search_for_filename(Buffer *buff, const char* currentWorkingDir, const char
     return;
 }
 
+
+/*
+* TODO: Json implmentation
+*/
 void search_in_file_for_text(Buffer *buff, const char* filename, const char* searchTerm, int JSON) {
     
     FILE* file = fopen(filename, "r+");
@@ -122,7 +133,7 @@ void ff(int argc, char *argv[]) {
             return;
         }
         
-        search_for_filename(buff, argv[3], argv[2], 0);
+        search_for_filename(argv[3], argv[2], 0);
     } else {
         help(argv[0]);
     }
