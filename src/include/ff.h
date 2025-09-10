@@ -215,6 +215,15 @@ static inline int file_exists(const char* filename) {
 
 }
 
+static inline char* get_last(const char* word) {
+  const char *last_char = strrchr(word, '/');
+  if (last_char != NULL ) {
+    return (char*)last_char + 1;
+  }
+
+  return (char*)word;  
+}
+
 static inline int CHECK_IS_DIR(const char* filepath) {
   struct stat filestats;
   if (stat(filepath, &filestats) != 0) {
@@ -233,6 +242,7 @@ static inline int CHECK_IS_SYMLINK(const char* filepath) {
 
   return S_ISLNK(filestats.st_mode);
 }
+
 
 static inline void append_buffer(Buffer *buff, const char *fmt, ...) {
     char str[MAX_BUFFER];

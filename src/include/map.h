@@ -1,6 +1,7 @@
 #ifndef __MAP_H__
 #define __MAP_H__
 
+#include <cstdlib>
 #include <sys/types.h>
 #include <stdlib.h>
 
@@ -29,6 +30,17 @@ static inline void initTable(HashTable *table) {
   }
 }
 
+
+static inline void free_table(HashTable *table) {
+  for(int i = 0; i < TABLE_SIZE; ++i) {
+    HashNode *node = table->buckets[i];
+    while (node) {
+      HashNode *temp = node;
+      node = node->next;
+      free(temp);
+    }
+  }
+}
 
 #endif //__MAP__H__
 

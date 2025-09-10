@@ -3,10 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 
+
 /*
-* TODO: 1) Multi thread implementation with queue, try this with single core (i.e 2 threads)
-* TODO: 2) Json implmentation 
+* TODO: 1) Json implmentation 
 */
+
 void search_for_filename(const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;
     
@@ -31,15 +32,17 @@ void search_for_filename(const char* currentWorkingDir, const char* searchTerm, 
                 if (path_len >= sizeof(temp_path)) {
                     continue;
                 }
-                
+
+                if (strstr(temp_path, "venv") || strstr(temp_path, ".git")) {
+                    continue;
+                }
+                                
                 if (realpath(temp_path, fullpath)) {
-                    if (!CHECK_IS_SYMLINK(fullpath)) {
-                        if (CHECK_IS_DIR(fullpath)) {
-                            search_for_filename(fullpath, searchTerm, JSON);
-                        } else if (strlen(searchTerm) == 0 || strstr(temp_path, searchTerm)) {
-                            // append_buffer(buff, "{\n  file_path: %s\n},\n", fullpath);
-                            printf("{\n file_path: %s \n},\n", fullpath);
-                        }
+                    if (CHECK_IS_DIR(fullpath)) {
+                        search_for_filename(fullpath, searchTerm, JSON);
+                    } else if (strlen(searchTerm) == 0 || strstr(get_last(temp_path), searchTerm)) {
+                        // append_buffer(buff, "{\n  file_path: %s\n},\n", fullpath);
+                        printf("{\n file_path: %s \n},\n", fullpath);
                     }
                 }
             }
@@ -53,6 +56,7 @@ void search_for_filename(const char* currentWorkingDir, const char* searchTerm, 
 /*
 * TODO: Json implmentation
 */
+
 void search_in_file_for_text(Buffer *buff, const char* filename, const char* searchTerm, int JSON) {
     
     FILE* file = fopen(filename, "r+");
