@@ -103,10 +103,9 @@ void help(const char *program_name) {
 }
  
 
-void ff(int argc, char *argv[]) {
-    Buffer* buff = new_buffer();
-    
+void ff(int argc, char *argv[]) {    
     if (!strcmp(argv[1], "-f")) {
+        Buffer* buff = new_buffer();
         if (argc < 4) {
             printf("Usage: %s -f <search_term> <filename> [--json]\n", argv[0]);
             free_buffer(buff);
@@ -133,7 +132,6 @@ void ff(int argc, char *argv[]) {
         
         if (!file_exists(argv[3])) { 
             printf("Dir not found: %s\n", argv[3]);
-            free_buffer(buff);
             return;
         }
         
