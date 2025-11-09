@@ -4,18 +4,20 @@
 /*
 * TODO: 1) Json implmentation 
 */
-void search_for_filename(const char* currentWorkingDir, const char* searchTerm, int JSON) {
+
+void search_for_filename(HashTable* table, const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;
-    
     char fullpath[MAX_BUFFER];
     char temp_path[MAX_BUFFER];
     
     DIR* dp = opendir(currentWorkingDir);
-    CHECK_ALLOC(dp);
+    if (dp == NULL) {
+        return;
+    }
     
     switch (JSON) {
         case 1:
-            printf("Demo JSON");
+            printf("Demo JSON\n");
             break;
         default:
             while ((dir = readdir(dp)) != NULL) {
@@ -24,28 +26,28 @@ void search_for_filename(const char* currentWorkingDir, const char* searchTerm, 
                     continue;
                 }
                 
-                long unsigned int path_len = snprintf(temp_path, sizeof(temp_path), "%s/%s", currentWorkingDir, dir->d_name);
-                if (path_len >= sizeof(temp_path)) {
+                int path_len = snprintf(temp_path, sizeof(temp_path), "%s/%s", currentWorkingDir, dir->d_name);
+                if (path_len < 0 || (size_t)path_len >= sizeof(temp_path)) {
                     continue;
                 }
 
-                if (strstr(temp_path, "venv") || strstr(temp_path, ".git") || strstr(temp_path, ".venv") || strstr(temp_path, "node_modules")) {
+                if (strstr(temp_path, "venv") || strstr(temp_path, ".git") || 
+                    strstr(temp_path, ".venv") || strstr(temp_path, "node_modules")) {
                     continue;
                 }
                                 
-                if (realpath(temp_path, fullpath)) {
+                if (realpath(temp_path, fullpath) != NULL) {
                     if (CHECK_IS_DIR(fullpath)) {
-                        search_for_filename(fullpath, searchTerm, JSON);
+                        search_for_filename(table, fullpath, searchTerm, JSON);
                     } else if (strlen(searchTerm) == 0 || strstr(get_last(temp_path), searchTerm)) {
-                        // append_buffer(buff, "{\n  file_path: %s\n},\n", fullpath);
-                        printf("{\n file_path: %s \n},\n", fullpath);
+                        printf("{\n  file_path: %s\n},\n", fullpath);
                     }
-                }
+                } 
             }
             break;
     }
+    
     closedir(dp);
-    return;
 }
 
 
@@ -133,12 +135,16 @@ void ff(int argc, char *argv[]) {
             printf("Dir not found: %s\n", argv[3]);
             return;
         }
-        
-        search_for_filename(argv[3], argv[2], 0);
+
+        HashTable table;
+        initTable(&table);
+        search_for_filename(&table, argv[3], argv[2], 0);
+        free_table(&table);
     } else {
         help(argv[0]);
     }
 }
+
 
 int main(int argc, char *argv[]) {
 
