@@ -6,7 +6,8 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <stdarg.h>
-#include "map.h"
+#include <stdlib.h>
+// #include "map.h"
 
 #ifdef _WIN32
 
@@ -175,7 +176,9 @@ void search_in_file_for_text(Buffer* buff, const char* filename, const char* sea
 * @param - Current working directory
 * @param - "search fiel name"
 */
-void search_for_filename(HashTable *table, const char* currentWorkingDir, const char* fileSearchTerm, int JSON);
+void search_for_filename(const char* currentWorkingDir, const char* fileSearchTerm, int JSON);
+
+// void search_for_filename(HashTable *table, const char* currentWorkingDir, const char* fileSearchTerm, int JSON);
 
 
 /*
@@ -258,15 +261,15 @@ static inline int CHECK_IS_SYMLINK(const char* filepath) {
   return S_ISLNK(filestats.st_mode);
 }
 
-static inline int CHECK_IS_PATH_VISTED(HashTable *table, const char* filepath) {
-  mapError_t result = insert(table, filepath);
-  if (result == mapKeyAlreadyPresentError) {
-    return 0;
-  } else {
-    MAP_CHECK(result);
-    return 1;
-  }
-}
+// static inline int CHECK_IS_PATH_VISTED(HashTable *table, const char* filepath) {
+//   mapError_t result = insert(table, filepath);
+//   if (result == mapKeyAlreadyPresentError) {
+//     return 0;
+//   } else {
+//     MAP_CHECK(result);
+//     return 1;
+//   }
+// }
 
 
 static inline void append_buffer(Buffer *buff, const char *fmt, ...) {

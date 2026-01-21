@@ -1,11 +1,12 @@
 #include "include/ff.h"
 #include <dirent.h>
+#include <string.h>
 
 /*
 * TODO: 1) Json implmentation 
 */
 
-void search_for_filename(HashTable* table, const char* currentWorkingDir, const char* searchTerm, int JSON) {
+void search_for_filename(const char* currentWorkingDir, const char* searchTerm, int JSON) {
     struct dirent *dir;
     char fullpath[MAX_BUFFER];
     char temp_path[MAX_BUFFER];
@@ -35,11 +36,11 @@ void search_for_filename(HashTable* table, const char* currentWorkingDir, const 
                     strstr(temp_path, ".venv") || strstr(temp_path, "node_modules")) {
                     continue;
                 }
-                                
+                                                
                 if (realpath(temp_path, fullpath) != NULL) {
                     if (CHECK_IS_DIR(fullpath)) {
-                        search_for_filename(table, fullpath, searchTerm, JSON);
-                    } else if (strlen(searchTerm) == 0 || strstr(get_last(temp_path), searchTerm)) {
+                        search_for_filename(fullpath, searchTerm, JSON);
+                    } else if (strlen(searchTerm) == 0 || strcmp(get_last(temp_path), searchTerm) == 0) {
                         printf("{\n  file_path: %s\n},\n", fullpath);
                     }
                 } 
@@ -136,10 +137,7 @@ void ff(int argc, char *argv[]) {
             return;
         }
 
-        HashTable table;
-        initTable(&table);
-        search_for_filename(&table, argv[3], argv[2], 0);
-        free_table(&table);
+        search_for_filename(argv[3], argv[2], 0);
     } else {
         help(argv[0]);
     }
